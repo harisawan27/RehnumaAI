@@ -1,0 +1,169 @@
+/**
+ * @fileoverview Firestore Security Rules for RehnumaAI application.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model.  Each user has complete control over their own data,
+ * and no user can access another user's data. Data is segregated by user ID in the Firestore path.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores user profile information, accessible only to the user themselves.
+ * - /users/{userId}/documents/{documentId}: Stores documents uploaded by the user, accessible only to that user.
+ * - /users/{userId}/documents/{documentId}/aiExplanations/{aiExplanationId}: AI-generated explanations for a document, accessible only to the document owner.
+ * - /users/{userId}/documents/{documentId}/practiceQuestions/{practiceQuestionId}: Practice questions for a document, accessible only to the document owner.
+ * - /users/{userId}/documents/{documentId}/summaries/{summaryId}: AI-generated summaries for a document, accessible only to the document owner.
+ * - /users/{userId}/documents/{documentId}/revisionPrompts/{revisionPromptId}: AI-generated revision prompts for a document, accessible only to the document owner.
+ *
+ * Key Security Decisions:
+ * - No user listing is allowed to protect user privacy.
+ * - All data is private and user-owned. There are no public collections.
+ * - Authorization Independence: Rules are structured to minimize `get()` calls by leveraging path-based authorization.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Allows a user to read and write their own profile information.
+     * @path /users/{userId}
+     * @allow (get, create, update, delete) if request.auth.uid == userId
+     * @deny (get, create, update, delete) if request.auth.uid != userId
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId} {
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false;
+
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Allows a user to read, create, update, and delete their own documents.
+     * @path /users/{userId}/documents/{documentId}
+     * @allow (get, create, update, delete) if request.auth.uid == userId
+     * @deny (get, create, update, delete) if request.auth.uid != userId
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/documents/{documentId} {
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Allows a user to read, create, update, and delete AI explanations for their own documents.
+     * @path /users/{userId}/documents/{documentId}/aiExplanations/{aiExplanationId}
+     * @allow (get, create, update, delete) if request.auth.uid == userId
+     * @deny (get, create, update, delete) if request.auth.uid != userId
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/documents/{documentId}/aiExplanations/{aiExplanationId} {
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Allows a user to read, create, update, and delete practice questions for their own documents.
+     * @path /users/{userId}/documents/{documentId}/practiceQuestions/{practiceQuestionId}
+     * @allow (get, create, update, delete) if request.auth.uid == userId
+     * @deny (get, create, update, delete) if request.auth.uid != userId
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/documents/{documentId}/practiceQuestions/{practiceQuestionId} {
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Allows a user to read, create, update, and delete summaries for their own documents.
+     * @path /users/{userId}/documents/{documentId}/summaries/{summaryId}
+     * @allow (get, create, update, delete) if request.auth.uid == userId
+     * @deny (get, create, update, delete) if request.auth.uid != userId
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/documents/{documentId}/summaries/{summaryId} {
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Allows a user to read, create, update, and delete revision prompts for their own documents.
+     * @path /users/{userId}/documents/{documentId}/revisionPrompts/{revisionPromptId}
+     * @allow (get, create, update, delete) if request.auth.uid == userId
+     * @deny (get, create, update, delete) if request.auth.uid != userId
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/documents/{documentId}/revisionPrompts/{revisionPromptId} {
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}

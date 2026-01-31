@@ -1,0 +1,22 @@
+{
+  "placeholderImages": [
+    {
+      "id": "study-session-1",
+      "description": "A textbook page about biology.",
+      "imageUrl": "https://images.unsplash.com/photo-1732304720116-4195b021d8d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx0ZXh0Ym9vayUyMGJpb2xvZ3l8ZW58MHx8fHwxNzU5MjY1NTQ1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "textbook biology"
+    },
+    {
+      "id": "study-session-2",
+      "description": "A physics diagram from a past paper.",
+      "imageUrl": "https://images.unsplash.com/photo-1758685849011-b3efeb6e1122?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGh5c2ljcyUyMGRpYWdyYW18ZW58MHx8fHwxNzU5Mjc3MDkxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "physics diagram"
+    },
+    {
+      "id": "study-session-3",
+      "description": "Chemistry formulas on a notebook.",
+      "imageUrl": "https://images.unsplash.com/photo-1758685734242-8dbf726479eb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaGVtaXN0cnklMjBmb3JtdWxhc3xlbnwwfHx8fDE3NTkzMTcwMDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "chemistry formulas"
+    }
+  ]
+}

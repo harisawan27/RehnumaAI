@@ -1,0 +1,180 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the RehnumaAI application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of the user."
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "URL of the user's profile picture."
+        }
+      },
+      "required": [
+        "id",
+        "email"
+      ]
+    },
+    "Document": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Document",
+      "type": "object",
+      "description": "Represents a document uploaded by a user, such as a textbook page or past paper.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the document entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Document)"
+        },
+        "fileName": {
+          "type": "string",
+          "description": "Name of the uploaded file."
+        },
+        "uploadDate": {
+          "type": "string",
+          "description": "Date and time when the document was uploaded.",
+          "format": "date-time"
+        },
+        "fileType": {
+          "type": "string",
+          "description": "Type of the uploaded file (e.g., PDF, image)."
+        },
+        "ocrContent": {
+          "type": "string",
+          "description": "Text content extracted from the document via OCR."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the study session."
+        },
+        "subject": {
+          "type": "string",
+          "description": "Subject of the study session."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "fileName",
+        "uploadDate",
+        "fileType",
+        "ocrContent"
+      ]
+    },
+    "ChatMessage": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ChatMessage",
+      "type": "object",
+      "description": "Represents a single message in a chat conversation.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the chat message."
+        },
+        "text": {
+            "type": "string",
+            "description": "The content of the message."
+        },
+        "sender": {
+            "type": "string",
+            "enum": ["user", "bot"],
+            "description": "Who sent the message."
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the message was sent."
+        }
+      },
+      "required": ["id", "text", "sender", "timestamp"]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "google.com"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/entities/User"
+          },
+          "description": "Stores user profile information.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/documents/{documentId}",
+        "definition": {
+          "entityName": "Document",
+          "schema": {
+            "$ref": "#/entities/Document"
+          },
+          "description": "Stores documents uploaded by the user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "documentId",
+              "description": "The unique identifier for the document."
+            }
+          ]
+        }
+      },
+       {
+        "path": "/users/{userId}/documents/{documentId}/messages/{messageId}",
+        "definition": {
+          "entityName": "ChatMessage",
+          "schema": {
+            "$ref": "#/entities/ChatMessage"
+          },
+          "description": "Stores chat messages for a specific document.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "documentId",
+              "description": "The unique identifier for the document."
+            },
+            {
+              "name": "messageId",
+              "description": "The unique identifier for the chat message."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to be user-centric and secure. All user-specific data, including their documents and chat messages, are stored in subcollections under their unique user ID. This path-based ownership model allows for simple and effective security rules, ensuring users can only access their own data. The `ChatMessage` entity is nested under a `Document` to keep conversations tied to their specific context."
+  }
+}
