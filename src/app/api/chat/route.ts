@@ -1,10 +1,31 @@
 // src/app/api/chat/route.ts
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+// Debug: Check if API key is present
+const apiKey = process.env.GEMINI_API_KEY;
+console.log('[Chat API] API Key present:', !!apiKey);
+console.log('[Chat API] API Key length:', apiKey?.length || 0);
+
+if (!apiKey) {
+  console.error('[Chat API] GEMINI_API_KEY is not set!');
+}
+
+const genAI = new GoogleGenerativeAI(apiKey || '');
 
 export async function POST(req: Request) {
   try {
+    // Check API key first
+    if (!apiKey) {
+      console.error('[Chat API] Request failed: No API key configured');
+      return new Response(JSON.stringify({
+        error: 'API key not configured',
+        details: 'GEMINI_API_KEY environment variable is missing'
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     const { message, instructions, top_p, top_k, files } = await req.json(); // ✅ Added files
     if (!message) {
       return new Response('Message is required', { status: 400 });
@@ -70,8 +91,22 @@ export async function POST(req: Request) {
         Connection: 'keep-alive',
       },
     });
-  } catch (err) {
-    console.error('Streaming error:', err);
-    return new Response('Internal Server Error', { status: 500 });
+  } catch (err: any) {
+    console.error('[Chat API] Error:', err);
+    console.error('[Chat API] Error message:', err?.message);
+    console.error('[Chat API] Error stack:', err?.stack);
+
+    // Return detailed error in development, generic in production
+    const errorMessage = process.env.NODE_ENV === 'development'
+      ? err?.message || 'Unknown error'
+      : 'Internal Server Error';
+
+    return new Response(JSON.stringify({
+      error: errorMessage,
+      details: err?.message || 'Unknown error'
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
